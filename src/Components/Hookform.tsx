@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
+import { useState } from "react";
 const Hookform = () => {
   type FormValues = {
     username: string;
@@ -7,7 +8,10 @@ const Hookform = () => {
     channel: string;
   };
   const form = useForm<FormValues>(); //form here is an object now
-  const { register, control, handleSubmit } = form; // we are destructuring here  and register is one of the methods of the form object that assist in managing form state
+  const { register, control, handleSubmit, formState } = form; // we are destructuring here  and register is one of the methods of the form object that assist in managing form state
+
+  const { errors } = formState;
+  //   console.log(formState.errors);
 
   const submt = (dtaa: FormValues) => {
     console.log("submitted", dtaa);
@@ -33,29 +37,27 @@ const Hookform = () => {
               },
             })}
           ></input>
+
+          <p>{errors.username?.message}</p>
           <label htmlFor="email">Email</label>
           <input
             type="text"
             id="email"
-            {...register(
-              "email",
-              // { required: "email is required" },
-              {
-                pattern: {
-                  value: /^[a-zA-Z0-9._%+-]+@gmail\.com$/,
-
-                  message: "invalid",
-                },
-              }
-            )}
+            {...register("email", {
+              pattern: {
+                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                message: "invalid format",
+              },
+            })}
           ></input>
+          <p>{errors.email?.message}</p>
           <label htmlFor="channel">Channel</label>
           <input
             type="text"
             id="channel"
             {...register("channel", { required: "channel is required" })}
           ></input>
-
+          <p>{errors.channel?.message}</p>
           <button>submit</button>
         </form>
         <DevTool control={control} />
