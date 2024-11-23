@@ -1,13 +1,26 @@
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
-import { useState } from "react";
-const Hookform = () => {
-  type FormValues = {
-    username: string;
-    email: string;
-    channel: string;
+type FormValues = {
+  username: string;
+  email: string;
+  channel: string;
+  social: {
+    facebook: string;
+    twitter: string;
   };
-  const form = useForm<FormValues>(); //form here is an object now
+};
+const Hookform = () => {
+  const form = useForm<FormValues>({
+    defaultValues: {
+      username: "saroj",
+      email: "sarojreus10@gmail.com",
+      channel: "",
+      social: {
+        facebook: "",
+        twitter: "",
+      },
+    },
+  }); //form here is an object now
   const { register, control, handleSubmit, formState } = form; // we are destructuring here  and register is one of the methods of the form object that assist in managing form state
 
   const { errors } = formState;
@@ -48,6 +61,19 @@ const Hookform = () => {
                 value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                 message: "invalid format",
               },
+              validate: {
+                notadmin: (fieldValue) => {
+                  return fieldValue === "admin@example.com"
+                    ? "enter different gmail"
+                    : true; // fieldvalue bata aune value validate is true vanna khojeko
+                },
+
+                baddomain: (fieldval) => {
+                  return fieldval.endsWith("baddomain.com")
+                    ? "domain not av"
+                    : true; // validated vanna khopjeko
+                },
+              },
             })}
           ></input>
           <p>{errors.email?.message}</p>
@@ -58,6 +84,20 @@ const Hookform = () => {
             {...register("channel", { required: "channel is required" })}
           ></input>
           <p>{errors.channel?.message}</p>
+
+          <label htmlFor="facebook">facebook</label>
+          <input
+            type="text"
+            id="facebook"
+            {...register("social.facebook")}
+          ></input>
+          <label htmlFor="twitter">twitter</label>
+          <input
+            type="text"
+            id="twitter"
+            {...register("social.twitter")}
+          ></input>
+
           <button>submit</button>
         </form>
         <DevTool control={control} />
