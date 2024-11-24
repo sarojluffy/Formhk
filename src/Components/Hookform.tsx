@@ -3,6 +3,7 @@ import { DevTool } from "@hookform/devtools";
 
 import { useFieldArray } from "react-hook-form"; //1 impoprt
 import "../style.css";
+import { useEffect } from "react";
 
 type FormValues = {
   username: string;
@@ -17,8 +18,9 @@ type FormValues = {
   phonenum: Array<{
     number: string;
   }>; //2  Array <{}> , this is array of object where each object will have number attribute which is string
-
+  age: number;
   // array of objects instead of array of strings because  works on objects
+  DOB: Date;
 };
 const Hookform = () => {
   const form = useForm<FormValues>({
@@ -34,11 +36,22 @@ const Hookform = () => {
 
       phoneN: ["", ""],
       phonenum: [{ number: "" }], //3 , initially one object at the beginning, have to specifu tis as an array
+      age: 0,
+      DOB: new Date(),
     },
   }); //form here is an object now
-  const { register, control, handleSubmit, formState } = form; // we are destructuring here  and register is one of the methods of the form object that assist in managing form state
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState,
+    watch,
+    getValues,
+    setValue,
+  } = form; // we are destructuring here  and register is one of the methods of the form object that assist in managing form state
 
-  const { errors } = formState;
+  const { errors, touchedFields, dirtyFields } = formState;
+  console.log(touchedFields, dirtyFields);
   //   console.log(formState.errors);
 
   const submt = (dtaa: FormValues) => {
@@ -49,6 +62,29 @@ const Hookform = () => {
     name: "phonenum", // the array of object phonenum will be recognized as field array now
     control, // this control comes frm the destructuring of form we have done before
   });
+
+  useEffect(() => {
+    const { unsubscribe } = watch((value) => {
+      // susbscribe refers to monitoring the changes while unsubscribe is vice versa
+      // the watch is notified abou the change and receives the data  ,  destructuring we get the unsubscribe here
+
+      // watch(value )  function execute vairako bujhnu
+      console.log(value);
+    });
+
+    return () => unsubscribe();
+  }, [watch]);
+
+  const getFieldValues = () => {
+    console.log(getValues(["username", "email"]));
+  };
+  const setFielVal = () => {
+    setValue("username", "ok", {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
+  };
   return (
     <>
       <div>
@@ -122,12 +158,15 @@ const Hookform = () => {
           <label htmlFor="phone1">phone2</label>
           <input type="text" id="phone2" {...register("phoneN.1")}></input>
 
-          <label htmlFor="phone1">phone2</label>
+          <label htmlFor="phone1">numbers list</label>
           {fields.map((field, index) => {
             return (
               <div key={field.id}>
-                ok
-                <input type="text" {...register(`phonenum.${index}.number`)} />
+                <input
+                  className="qw"
+                  type="text"
+                  {...register(`phonenum.${index}.number`)}
+                />
                 {index > 0 && (
                   <button
                     onClick={() => {
@@ -148,7 +187,38 @@ const Hookform = () => {
             add more num
           </button>
 
-          <button>submit</button>
+          <label htmlFor="age">age</label>
+          <input
+            type="text"
+            id="age"
+            {...register("age", {
+              required: {
+                value: true,
+                message: "age is required",
+              },
+              valueAsNumber: true,
+            })}
+          ></input>
+          <p>{errors.age?.message}</p>
+
+          <label htmlFor="dob">date of birth</label>
+          <input
+            type="date"
+            id="dob"
+            {...register("DOB", {
+              required: {
+                value: true,
+                message: "DOB is required",
+              },
+              valueAsDate: true,
+            })}
+          ></input>
+          <p>{errors.DOB?.message}</p>
+
+          <button onClick={getFieldValues}> get field values </button>
+          <button onClick={setFielVal}> set field values </button>
+
+          <button type="button">submit</button>
         </form>
         <DevTool control={control} />
       </div>
