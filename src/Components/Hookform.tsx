@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 
 import { useFieldArray } from "react-hook-form"; //1 impoprt
@@ -26,8 +26,8 @@ const Hookform = () => {
   const form = useForm<FormValues>({
     //default values are passed
     defaultValues: {
-      username: "saroj",
-      email: "sarojreus10@gmail.com",
+      username: "",
+      email: "",
       channel: "",
       social: {
         facebook: "",
@@ -48,14 +48,26 @@ const Hookform = () => {
     watch,
     getValues,
     setValue,
+    reset,
   } = form; // we are destructuring here  and register is one of the methods of the form object that assist in managing form state
-
-  const { errors, touchedFields, dirtyFields } = formState;
-  console.log(touchedFields, dirtyFields);
-  //   console.log(formState.errors);
+  console.log("saroj");
+  const {
+    errors,
+    touchedFields,
+    dirtyFields,
+    isDirty,
+    isValid,
+    isSubmitting,
+    isSubmitted,
+    isSubmitSuccessful,
+    submitCount,
+  } = formState; //component rerenders in change of any of these
+  //   console.log(isDirty, isValid);
+  console.log(isSubmitting, isSubmitted, isSubmitSuccessful, submitCount);
 
   const submt = (dtaa: FormValues) => {
     console.log("submitted", dtaa);
+    alert("submitted");
   };
 
   const { fields, append, remove } = useFieldArray({
@@ -63,17 +75,17 @@ const Hookform = () => {
     control, // this control comes frm the destructuring of form we have done before
   });
 
-  useEffect(() => {
-    const { unsubscribe } = watch((value) => {
-      // susbscribe refers to monitoring the changes while unsubscribe is vice versa
-      // the watch is notified abou the change and receives the data  ,  destructuring we get the unsubscribe here
+  //   useEffect(() => {
+  //     const { unsubscribe } = watch((value) => {
+  //       // susbscribe refers to monitoring the changes while unsubscribe is vice versa
+  //       // the watch is notified abou the change and receives the data  ,  destructuring we get the unsubscribe here
 
-      // watch(value )  function execute vairako bujhnu
-      console.log(value);
-    });
+  //       // watch(value )  function execute vairako bujhnu
+  //       console.log(value);
+  //     });
 
-    return () => unsubscribe();
-  }, [watch]);
+  //     return () => unsubscribe();
+  //   }, [watch]);
 
   const getFieldValues = () => {
     console.log(getValues(["username", "email"]));
@@ -85,12 +97,16 @@ const Hookform = () => {
       shouldValidate: true,
     });
   };
+
+  const onError = (errors: FieldErrors<FormValues>) => {
+    // console.log("form errors", errors);
+  };
   return (
     <>
       <div>
         <form
           className="flex flex-col font-bold"
-          onSubmit={handleSubmit(submt)}
+          onSubmit={handleSubmit(submt, onError)}
           noValidate //add this attribute validation ko lagi , once validate is mentioned , the fields cannot be empty else it wont be submitted
           // also prevents the browser validation and enables the react hook validation
         >
@@ -103,6 +119,8 @@ const Hookform = () => {
                 value: true,
                 message: "username is required",
               },
+
+              //   disabled: true,
             })}
           ></input>
 
@@ -120,8 +138,9 @@ const Hookform = () => {
                 notadmin: (fieldValue) => {
                   return fieldValue === "admin@example.com"
                     ? "enter different gmail"
-                    : true; // fieldvalue bata aune value validate is true vanna khojeko
+                    : true; // notadmin ko validation is true vanna khojeko
                 },
+                // validation nai enable disable chai vanya haina
 
                 baddomain: (fieldval) => {
                   return fieldval.endsWith("baddomain.com")
@@ -218,7 +237,21 @@ const Hookform = () => {
           <button onClick={getFieldValues}> get field values </button>
           <button onClick={setFielVal}> set field values </button>
 
-          <button type="button">submit</button>
+          <button
+            type="submit"
+
+            //   disabled
+          >
+            submit
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              reset();
+            }}
+          >
+            reset
+          </button>
         </form>
         <DevTool control={control} />
       </div>
