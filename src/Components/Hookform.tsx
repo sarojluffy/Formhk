@@ -39,6 +39,7 @@ const Hookform = () => {
       age: 0,
       DOB: new Date(),
     },
+    mode: "onBlur",
   }); //form here is an object now
   const {
     register,
@@ -160,12 +161,13 @@ const Hookform = () => {
 
                 apibata: async (FieldKoval) => {
                   const apival = await fetch(
-                    `https://jsonplaceholder.typicode.com/users?email=${FieldKoval}`
+                    `https://jsonplaceholder.typicode.com/users?email=${FieldKoval}`,
+                    { method: "get" }
                   );
                   const Jsonformatted = await apival.json();
 
                   return Jsonformatted.length === 0 ? true : "email exists";
-                },
+                }, // true returns the validation is true
               },
             })}
           ></input>
