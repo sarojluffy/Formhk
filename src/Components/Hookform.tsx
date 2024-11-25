@@ -1,4 +1,4 @@
-import { FieldErrors, useForm } from "react-hook-form";
+import { FieldErrors, get, useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 
 import { useFieldArray } from "react-hook-form"; //1 impoprt
@@ -26,7 +26,7 @@ const Hookform = () => {
   const form = useForm<FormValues>({
     //default values are passed
     defaultValues: {
-      username: "",
+      username: "saroj",
       email: "",
       channel: "",
       social: {
@@ -63,7 +63,12 @@ const Hookform = () => {
     submitCount,
   } = formState; //component rerenders in change of any of these
   //   console.log(isDirty, isValid);
-  console.log(isSubmitting, isSubmitted, isSubmitSuccessful, submitCount);
+  //   console.log(isSubmitting, isSubmitted, isSubmitSuccessful, submitCount);
+
+  //   const submt = (dtaa: FormValues) => {
+  //     console.log("submitted", dtaa);
+  //     alert("submitted");
+  //   };
 
   const submt = (dtaa: FormValues) => {
     console.log("submitted", dtaa);
@@ -86,6 +91,11 @@ const Hookform = () => {
 
   //     return () => unsubscribe();
   //   }, [watch]);
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [isSubmitSuccessful, reset]);
 
   const getFieldValues = () => {
     console.log(getValues(["username", "email"]));
@@ -146,6 +156,15 @@ const Hookform = () => {
                   return fieldval.endsWith("baddomain.com")
                     ? "domain not av"
                     : true; // validated vanna khopjeko
+                },
+
+                apibata: async (FieldKoval) => {
+                  const apival = await fetch(
+                    `https://jsonplaceholder.typicode.com/users?email=${FieldKoval}`
+                  );
+                  const Jsonformatted = await apival.json();
+
+                  return Jsonformatted.length === 0 ? true : "email exists";
                 },
               },
             })}
