@@ -72,7 +72,7 @@ const Hookform = () => {
   //   };
 
   const submt = (dtaa: FormValues) => {
-    console.log("submitted", dtaa);
+    console.log("submitted", dtaa); // the dtaa here returns an object of submitted data that was monitored by the register in the jsx below
     alert("submitted");
   };
 
